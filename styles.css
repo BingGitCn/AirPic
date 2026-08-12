@@ -70,14 +70,44 @@ body::before {
   border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%;
   background: linear-gradient(135deg, #e8d5c4, #f1e3d3);
   opacity: 0.8;
+  animation: breathe-a 13s ease-in-out infinite;
+  will-change: transform, opacity, border-radius;
 }
 .bg .b2 {
   bottom: -8%; left: -8%; width: 22vw; height: 22vw;
   border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%;
   background: linear-gradient(135deg, #e0e8e2, #eef2eb);
   opacity: 0.8;
+  animation: breathe-b 10s ease-in-out -5s infinite;   /* desynced: blobs breathe out of phase */
+  will-change: transform, opacity, border-radius;
 }
 .bg .b3 { display: none; }
+
+/* slow organic breathing — scale + glow + the blob shape itself morphs */
+@keyframes breathe-a {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%;
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08) rotate(2.5deg);
+    border-radius: 46% 54% 48% 52% / 52% 46% 54% 48%;
+    opacity: 0.95;
+  }
+}
+@keyframes breathe-b {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%;
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.06) rotate(-2deg);
+    border-radius: 54% 46% 52% 48% / 48% 54% 46% 52%;
+    opacity: 0.92;
+  }
+}
 
 .bar, .view, .foot { position: relative; z-index: 1; }
 
@@ -252,6 +282,7 @@ body::before {
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+  .bg span { animation: none; }
 }
 
 /* ============================================================
