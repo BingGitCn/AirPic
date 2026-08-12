@@ -4,6 +4,12 @@
 export const dict = {
   zh: {
     'tagline': '局域网照片直传',
+    'mode.hint': '传照片 · 传文件',
+    'step.connect': '扫码连接',
+    'mode.photo': '传照片',
+    'mode.photo.desc': '选个文件夹，照片即达',
+    'mode.file': '传文件',
+    'mode.file.desc': '与手机双向互发',
     'hero.title.a': '快门一按，',
     'hero.title.b': '即达。',
     'hero.sub': '选个文件夹，手机扫一扫，照片便静静落下。',
@@ -57,6 +63,12 @@ export const dict = {
   },
   en: {
     'tagline': 'Direct photo transfer · local network',
+    'mode.hint': 'Photos · Files',
+    'step.connect': 'Scan to connect',
+    'mode.photo': 'Photos',
+    'mode.photo.desc': 'Pick a folder — photos land there',
+    'mode.file': 'Files',
+    'mode.file.desc': 'Exchange files both ways',
     'hero.title.a': 'One shutter press — ',
     'hero.title.b': 'it’s there.',
     'hero.sub': 'Pick a folder, scan with your phone, and the photos land quietly.',

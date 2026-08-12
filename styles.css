@@ -99,38 +99,50 @@ body::before {
 /* ---------------- layout ---------------- */
 .view { flex: 1 0 auto; display: flex; }
 .view-receiver { align-items: flex-start; padding: 0 clamp(12px, 4vw, 24px); }
-.wrap { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin: clamp(14px, 4vw, 36px) auto clamp(16px, 4vw, 32px); padding: 0; }
+.wrap {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 880px;
+  margin: clamp(10px, 2vw, 22px) auto;
+  padding: 0 clamp(10px, 2vw, 22px);
+  display: flex; flex-direction: column; gap: 14px;
+}
 
-/* hero */
-.tagline { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--sage-d); margin: 0 0 12px; font-weight: 500; }
-.hero-title {
-  font-family: var(--serif); font-weight: 600; font-size: clamp(2.2rem, 6.6vw, 3.7rem);
-  line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 16ch; color: var(--earth);
-}
-.hero-title .accent { color: var(--sage-d); font-style: italic; }
-.hero-sub {
-  font-family: var(--serif); font-size: clamp(1.05rem, 2.4vw, 1.24rem); line-height: 1.6;
-  color: var(--ink-2); margin: 0 0 34px; max-width: 44ch;
-}
+/* title line (single screen) */
+.title-line { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.tagline { font-family: var(--serif); font-weight: 600; font-size: clamp(1.15rem, 2.6vw, 1.45rem); color: var(--earth); letter-spacing: -0.01em; }
+.mode-hint { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--sage-d); }
 
 /* ---------------- panel — the focal Linen card (blob) ---------------- */
-.panel {
-  position: relative;
+.board {
   display: grid;
-  grid-template-columns: minmax(215px, 252px) 1fr;
-  gap: 34px;
-  align-items: center;
-  padding: clamp(26px, 4vw, 40px);
+  grid-template-columns: minmax(220px, 270px) 1fr;
+  gap: 22px;
+  align-items: stretch;
+  padding: clamp(16px, 2.5vw, 26px);
   background: #e9e0d4;
-  border-radius: 46px 30px 48px 34px;
+  border-radius: 40px 26px 42px 28px;
   box-shadow: var(--sh-soft);
-  margin-bottom: 18px;
 }
-.panel-qr { display: flex; flex-direction: column; align-items: center; gap: 13px; }
-.qr-frame { position: relative; padding: 14px; background: var(--cream); border-radius: 30px 22px 30px 22px; box-shadow: var(--sh-press); }
-#qr-canvas { display: block; width: 224px; height: 224px; border-radius: 14px; }
-.qr-hint { font-size: 13px; color: var(--ink-2); }
-.panel-side { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.col-qr { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.step-tag { display: flex; align-items: center; gap: 8px; }
+.step-no {
+  font-family: var(--serif); font-weight: 600; font-size: 12px; color: var(--cream);
+  background: var(--sage); width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.step-tag span:last-child { font-size: 12.5px; color: var(--ink-2); font-weight: 500; }
+.qr-frame { position: relative; padding: 12px; background: var(--cream); border-radius: 30px 22px 30px 22px; box-shadow: var(--sh-press); }
+#qr-canvas { display: block; width: 200px; height: 200px; border-radius: 14px; }
+.qr-hint { font-size: 12.5px; color: var(--ink-2); }
+.col-links { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+.col-modes { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.mode { background: var(--cream); border-radius: 24px 16px 24px 16px; padding: 13px 18px 15px; box-shadow: var(--sh-press); }
+.mode-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+.mode-title { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; color: var(--earth); }
+.mode-desc { font-size: 12px; color: var(--ink-2); }
+.mode-body { display: flex; flex-direction: column; gap: 10px; }
+.folder-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 /* buttons — earth, blob, sink on hover */
 .btn {
@@ -173,21 +185,9 @@ body::before {
 
 .unsupported { font-size: 13px; color: var(--earth); margin: 12px 0 0; max-width: 48ch; }
 
-/* belief — a smaller Linen card (opposite blob) */
-.belief {
-  margin: 30px 0 8px; padding: 20px 24px; background: #efe7db;
-  border-radius: 28px 40px 26px 42px; box-shadow: var(--sh-press);
-  display: grid; gap: 10px;
-}
-.belief .rule { display: block; width: 30px; height: 2px; background: var(--sage); border-radius: 2px; }
-.belief p { margin: 0; font-family: var(--serif); font-size: clamp(1.04rem, 2.3vw, 1.2rem); line-height: 1.55; color: var(--ink); max-width: 40ch; }
-
-/* flow — quiet one-line strip */
-.flow {
-  margin: 42px 0 0; padding-top: 22px; border-top: 1px solid var(--line);
-  text-align: center; font-family: var(--serif); font-style: italic;
-  font-size: clamp(1rem, 2.2vw, 1.14rem); color: var(--ink-2); line-height: 1.7; letter-spacing: 0.01em;
-}
+/* mini footer (privacy line) — single screen */
+.mini-foot { text-align: center; font-family: var(--serif); font-size: 12.5px; color: var(--ink-2); padding: 0 0 2px; }
+.role-receiver .foot { display: none; }
 
 /* footer */
 .foot { margin-top: auto; padding: 32px var(--pad) clamp(22px, 5vw, 44px); text-align: center; }
@@ -244,11 +244,9 @@ body::before {
 .boot-notice { margin: 0; padding: 12px var(--pad); background: var(--tan-soft); color: #6e4f2c; border-bottom: 1px solid #e2cdb0; font-size: 13px; line-height: 1.6; }
 
 /* ---------------- responsive ---------------- */
-@media (max-width: 620px) {
-  .panel { grid-template-columns: 1fr; gap: 24px; padding: 26px; }
-  .panel-side { align-items: stretch; }
-  .panel-side .btn { align-self: stretch; text-align: center; }
-  #qr-canvas { width: 208px; height: 208px; }
+@media (max-width: 720px) {
+  .board { grid-template-columns: 1fr; }
+  #qr-canvas { width: 196px; height: 196px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -258,26 +256,18 @@ body::before {
 /* ============================================================
    bidirectional: PC send zone, activity list, phone receive
    ============================================================ */
-.send-zone {
-  margin: 24px 0 8px; padding: 20px 24px;
-  background: var(--linen-2);
-  border-radius: 34px 24px 36px 26px;
-  box-shadow: var(--sh-press);
-}
-.send-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.send-title { font-family: var(--serif); font-weight: 600; font-size: 1.1rem; color: var(--earth); }
-.send-state { font-size: 12px; color: var(--ink-2); }
+.send-state { margin-left: auto; font-size: 11.5px; color: var(--ink-3); }
 
 .drop {
   display: block; text-align: center; cursor: pointer;
-  padding: 22px 16px; border-radius: 22px 16px 22px 16px;
+  padding: 15px 14px; border-radius: 20px 14px 20px 14px;
   border: 1.5px dashed var(--line-2);
-  color: var(--ink-2); font-size: 13.5px;
+  color: var(--ink-2); font-size: 13px;
   transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease;
 }
 .drop:hover, .drop.over { background: var(--cream); border-color: var(--sage); color: var(--earth); }
 
-.activity { display: grid; gap: 8px; margin-top: 14px; }
+.activity { display: grid; gap: 8px; margin-top: 10px; max-height: 108px; overflow-y: auto; }
 .act {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px 10px;
   background: var(--cream); border-radius: 16px 12px 16px 12px; padding: 9px 14px;

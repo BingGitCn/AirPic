@@ -12,7 +12,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=17" />
+  <link rel="stylesheet" href="./styles.css?v=18" />
 </head>
 <body class="role-receiver">
 
@@ -34,57 +34,72 @@
 
   <!-- ============ RECEIVER (PC) ============ -->
   <main id="view-receiver" class="view view-receiver">
-    <section class="wrap">
+    <div class="wrap">
 
-      <div class="tagline" data-i18n="tagline">Direct photo transfer · local network</div>
+      <div class="title-line">
+        <span class="tagline" data-i18n="tagline">Direct photo transfer · local network</span>
+        <span class="mode-hint" data-i18n="mode.hint">Photos · Files</span>
+      </div>
 
-      <h1 class="hero-title"><span data-i18n="hero.title.a">快门一按，</span><span class="accent" data-i18n="hero.title.b">即达。</span></h1>
-      <p class="hero-sub" data-i18n="hero.sub">Phone photos, over a direct local link, into the folder you choose.</p>
-
-      <section class="panel" id="receiver-panel" aria-label="receiver">
-        <div class="panel-qr">
+      <section class="board" aria-label="workbench">
+        <!-- 1 · scan to connect -->
+        <div class="col-qr">
+          <div class="step-tag"><span class="step-no">1</span><span data-i18n="step.connect">Scan to connect</span></div>
           <div class="qr-frame">
             <canvas id="qr-canvas" width="256" height="256" aria-label="QR code"></canvas>
           </div>
           <div class="qr-hint" data-i18n="qr.hint">Scan with your phone</div>
           <div class="status" id="qr-status" data-state="waiting" data-i18n="status.waiting">Waiting for connection</div>
-        </div>
-        <div class="panel-side">
-          <button id="pick-btn" class="btn primary" type="button" data-i18n="folder.select">Choose a folder</button>
-          <button id="change-btn" class="btn-quiet hidden" type="button" data-i18n="folder.change">Change folder</button>
-          <button id="reconnect-btn" class="btn-quiet hidden" type="button" data-i18n="folder.reconnect">Reconnect folder</button>
-          <div class="meta">
-            <span class="folder-name" id="folder-name" data-i18n="folder.empty">No folder chosen yet</span>
-            <span class="received-count mono" id="received-count"></span>
+          <div class="col-links">
+            <button id="new-code-btn" class="btn-quiet" type="button" data-i18n="pairing.new">New pairing code</button>
+            <button id="copy-link-btn" class="btn-quiet" type="button" data-i18n="link.copy">Copy pairing link</button>
           </div>
-          <button id="new-code-btn" class="btn-quiet" type="button" data-i18n="pairing.new">New pairing code</button>
-          <button id="copy-link-btn" class="btn-quiet" type="button" data-i18n="link.copy">Copy pairing link</button>
+        </div>
+
+        <!-- 2 · photos / files -->
+        <div class="col-modes">
+          <div class="mode">
+            <div class="mode-head">
+              <span class="step-no">2</span>
+              <span class="mode-title" data-i18n="mode.photo">Photos</span>
+              <span class="mode-desc" data-i18n="mode.photo.desc">Pick a folder — photos land there</span>
+            </div>
+            <div class="mode-body">
+              <div class="folder-row">
+                <button id="pick-btn" class="btn primary" type="button" data-i18n="folder.select">Choose a folder</button>
+                <button id="change-btn" class="btn-quiet hidden" type="button" data-i18n="folder.change">Change folder</button>
+                <button id="reconnect-btn" class="btn-quiet hidden" type="button" data-i18n="folder.reconnect">Reconnect folder</button>
+              </div>
+              <div class="meta">
+                <span class="folder-name" id="folder-name" data-i18n="folder.empty">No folder chosen yet</span>
+                <span class="received-count mono" id="received-count"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode">
+            <div class="mode-head">
+              <span class="step-no">2</span>
+              <span class="mode-title" data-i18n="mode.file">Files</span>
+              <span class="mode-desc" data-i18n="mode.file.desc">Exchange files both ways</span>
+              <span class="send-state" id="send-state" data-i18n="send.idle">Connects once a phone joins</span>
+            </div>
+            <div class="mode-body">
+              <label class="drop" id="drop">
+                <input id="pc-file-input" type="file" multiple hidden />
+                <span class="drop-hint" data-i18n="send.drop">Drop files · click to choose · paste</span>
+              </label>
+              <div class="activity" id="activity" aria-live="polite"></div>
+            </div>
+          </div>
         </div>
       </section>
 
       <p class="unsupported hidden" id="unsupported" data-i18n="unsupported">For automatic saving, open in Chrome or Edge.</p>
 
-      <!-- send to phone (PC → phone, bidirectional) -->
-      <section class="send-zone" id="send-zone">
-        <div class="send-head">
-          <span class="send-title" data-i18n="send.title">Send to phone</span>
-          <span class="send-state" id="send-state" data-i18n="send.idle">Connects once a phone joins</span>
-        </div>
-        <label class="drop" id="drop">
-          <input id="pc-file-input" type="file" multiple hidden />
-          <span class="drop-hint" data-i18n="send.drop">Drop files · click to choose · paste</span>
-        </label>
-        <div class="activity" id="activity" aria-live="polite"></div>
-      </section>
+      <footer class="mini-foot"><span data-i18n="privacy">No servers. End-to-end encrypted. Direct between devices.</span></footer>
 
-      <div class="belief">
-        <span class="rule" aria-hidden="true"></span>
-        <p data-i18n="privacy">Your photos never touch a server. Direct, end-to-end, encrypted.</p>
-      </div>
-
-      <p class="flow" data-i18n="flow">Choose folder · Scan code · Shoot or pick · Lands</p>
-
-    </section>
+    </div>
   </main>
 
   <!-- ============ SENDER (PHONE) ============ -->
@@ -147,6 +162,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=17"></script>
+  <script type="module" src="./app/main.js?v=18"></script>
 </body>
 </html>
