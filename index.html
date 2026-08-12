@@ -12,7 +12,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Serif+SC:wght@500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=20260812a" />
+  <link rel="stylesheet" href="./styles.css?v=20260812b" />
 </head>
 <body class="role-receiver">
 
@@ -40,13 +40,14 @@
             <canvas id="qr-canvas" width="256" height="256" aria-label="QR code"></canvas>
           </div>
           <div class="qr-hint" data-i18n="qr.hint">Scan with your phone</div>
-          <div class="qr-url mono" id="qr-url" title="pairing url"></div>
           <div class="status" id="qr-status" data-state="waiting" data-i18n="status.waiting">Waiting for connection</div>
         </div>
         <div class="panel-side">
           <button id="pick-btn" class="btn primary" type="button" data-i18n="folder.select">Choose a folder</button>
+          <button id="change-btn" class="btn-quiet hidden" type="button" data-i18n="folder.change">Change folder</button>
           <div class="folder-name" id="folder-name" data-i18n="folder.empty">No folder chosen yet</div>
           <button id="reconnect-btn" class="btn ghost hidden" type="button" data-i18n="folder.reconnect">Reconnect folder</button>
+          <button id="new-code-btn" class="btn-quiet" type="button" data-i18n="pairing.new">New pairing code</button>
           <div class="received-count mono" id="received-count"></div>
         </div>
       </section>
@@ -131,6 +132,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=20260812a"></script>
+  <script type="module" src="./app/main.js?v=20260812b"></script>
 </body>
 </html>

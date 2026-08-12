@@ -161,16 +161,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 #qr-canvas { display: block; width: 224px; height: 224px; }
 .qr-hint { font-size: 12.5px; color: var(--ink-2); }
-.qr-url {
-  font-size: 11px;
-  color: var(--ink-3);
-  word-break: break-all;
-  max-width: 210px;
-  margin: 0 auto;
-  line-height: 1.5;
-  user-select: all;
-  cursor: text;
-}
 .panel-side { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
 
 /* buttons */
@@ -188,6 +178,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn.ghost { background: transparent; color: var(--accent); border-color: var(--rule-2); }
 .btn.ghost:hover { border-color: var(--accent); }
 .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* quiet secondary action — a text-like underline link, not a competing button */
+.btn-quiet {
+  background: transparent;
+  border: none;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 3px;
+  transition: color .2s, text-decoration-color .2s;
+}
+.btn-quiet:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 .folder-name { font-size: 12.5px; color: var(--ink-2); word-break: break-all; }
 .received-count { font-size: 11.5px; color: var(--ink-3); min-height: 1em; }
