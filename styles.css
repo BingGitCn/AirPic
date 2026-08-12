@@ -62,25 +62,14 @@ body::before {
   opacity: 0.05;
   mix-blend-mode: multiply;
 }
-/* earthy atmosphere — sage glow top-right */
-body::after {
-  content: "";
-  position: fixed; top: -16%; right: -12%;
-  width: 60vw; height: 60vw; border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%;
-  background: radial-gradient(closest-side, rgba(139,157,119,0.30), transparent 72%);
-  filter: blur(8px);
-  z-index: 0; pointer-events: none;
-}
+/* natural-organic background blobs — earthy gradients, organic shapes (per showcase) */
+.bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg span { position: absolute; display: block; filter: blur(34px); }
+.bg .b1 { top: -14%; right: -10%; width: 52vw; height: 52vw; border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%; background: linear-gradient(135deg, #8b9d77, #e9e0d4); opacity: 0.55; }
+.bg .b2 { bottom: -16%; left: -12%; width: 48vw; height: 48vw; border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%; background: linear-gradient(135deg, #d4a373, #faf6f1); opacity: 0.60; }
+.bg .b3 { top: 34%; left: 52%; width: 26vw; height: 26vw; border-radius: 60% 40% 55% 45% / 45% 60% 40% 55%; background: linear-gradient(135deg, #5c4033, #8b9d77); opacity: 0.16; }
+
 .bar, .view, .foot { position: relative; z-index: 1; }
-/* tan glow bottom-left on the receiver page */
-.view-receiver::before {
-  content: "";
-  position: absolute; left: -10%; bottom: -8%;
-  width: 46vw; height: 46vw; border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%;
-  background: radial-gradient(closest-side, rgba(212,163,115,0.28), transparent 72%);
-  filter: blur(8px);
-  z-index: 0; pointer-events: none;
-}
 
 /* ---------------- top bar ---------------- */
 .bar { display: flex; align-items: center; justify-content: space-between; padding: 20px var(--pad); }

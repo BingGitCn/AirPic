@@ -12,9 +12,16 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=11" />
+  <link rel="stylesheet" href="./styles.css?v=12" />
 </head>
 <body class="role-receiver">
+
+  <!-- natural-organic background: cream ground + earthy gradient blobs + paper grain -->
+  <div class="bg" aria-hidden="true">
+    <span class="b1"></span>
+    <span class="b2"></span>
+    <span class="b3"></span>
+  </div>
 
   <!-- boot diagnostic: shown only if the app fails to start (e.g. opened via file://) -->
   <div id="boot-notice" class="boot-notice" role="alert" hidden></div>
@@ -119,6 +126,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=11"></script>
+  <script type="module" src="./app/main.js?v=12"></script>
 </body>
 </html>
