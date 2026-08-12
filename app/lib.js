@@ -1,5 +1,5 @@
 // app/lib.js — shared utilities: DOM, room id, QR, PeerJS config, FS Access, bytes.
-import QrCreator from '../vendor/qr-creator.min.mjs';
+// qrcode-generator is loaded as a classic script (exposes window.qrcode).
 
 // ---------------- DOM ----------------
 export const $ = (sel, root = document) => root.querySelector(sel);
@@ -32,11 +32,30 @@ export function roomIdFromHash() {
 }
 
 // ---------------- QR ----------------
+// Draws a standard, highly scannable QR: square modules + proper quiet zone.
+// (qr-creator rounded modules + no margin made many phone scanners fail with "no text".)
 export function renderQr(canvas, data) {
-  QrCreator.render(
-    { data, size: 256, fill: '#1C1C1A', background: '#FAFAF7', ecLevel: 'M' },
-    canvas
-  );
+  if (!canvas || !window.qrcode) return;
+  const qr = window.qrcode(0, 'M'); // type 0 = auto, ecLevel 'M'
+  qr.addData(data || '');
+  qr.make();
+  const count = qr.getModuleCount();
+  const margin = 4;              // quiet zone, in modules
+  const total = count + margin * 2;
+  const size = 256;
+  const cell = size / total;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  canvas.width = size;
+  canvas.height = size;
+  ctx.fillStyle = '#FAFAF7';     // background + quiet zone
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#1C1C1A';     // dark modules
+  for (let r = 0; r < count; r++) {
+    for (let c = 0; c < count; c++) {
+      if (qr.isDark(r, c)) ctx.fillRect((c + margin) * cell, (r + margin) * cell, cell, cell);
+    }
+  }
 }
 
 // ---------------- PeerJS (uses global window.Peer from UMD build) ----------------
