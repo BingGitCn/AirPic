@@ -1,6 +1,6 @@
 // app/receiver.js — PC side: pick folder, listen on PeerJS, render QR, write incoming files.
-import * as lib from './lib.js?v=12';
-import { t, getLang } from './i18n.js?v=12';
+import * as lib from './lib.js?v=13';
+import { t, getLang } from './i18n.js?v=13';
 
 let dirHandle = null;
 let peer = null;
