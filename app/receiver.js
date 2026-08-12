@@ -1,7 +1,7 @@
 // app/receiver.js — PC side: pick folder, listen on PeerJS, render QR,
 // receive files into the folder, and (bidirectional) send files to the phone.
-import * as lib from './lib.js?v=22';
-import { t, getLang } from './i18n.js?v=22';
+import * as lib from './lib.js?v=23';
+import { t, getLang } from './i18n.js?v=23';
 
 let dirHandle = null;
 let peer = null;
@@ -240,7 +240,11 @@ function setupConnection(conn) {
     try { conn.dataChannel.binaryType = 'arraybuffer'; } catch {}
   }
 
+  const openTimer = setTimeout(() => {
+    if (!conn.open) setStatus('network'); // scanned, but the data channel never opened (likely different network)
+  }, 6000);
   conn.on('open', () => {
+    clearTimeout(openTimer);
     setStatus('connected');
     setSendState(true);
   });

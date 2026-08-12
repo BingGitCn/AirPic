@@ -1,10 +1,11 @@
 // app/sender.js — phone side: connect to room, send photos/files to the computer,
 // and receive files the computer sends back (save to downloads).
-import * as lib from './lib.js?v=22';
-import { t, getLang } from './i18n.js?v=22';
+import * as lib from './lib.js?v=23';
+import { t, getLang } from './i18n.js?v=23';
 
 let peer = null;
 let conn = null;
+let sawPeerUnavailable = false;   // PC peer id not registered (offline / stale QR)
 let queue = [];
 let busy = false;
 let seq = 0;
@@ -41,7 +42,11 @@ function connect(roomId) {
 
   peer.on('error', (err) => {
     console.warn('[AirPic peer error]', err && err.type, err && err.message);
-    setStatus('error');
+    if (err && err.type === 'peer-unavailable') {
+      sawPeerUnavailable = true; // PC not registered — let the retry timer decide
+    } else {
+      setStatus('error');
+    }
   });
 }
 
@@ -127,7 +132,8 @@ function connectWithRetry(roomId, attempt = 0) {
         try { conn && conn.close && conn.close(); } catch {}
         setTimeout(() => connectWithRetry(roomId, attempt + 1), 900);
       } else {
-        setStatus('pcOffline');
+        // signaling worked but the channel never opened: PC offline vs different network
+        setStatus(sawPeerUnavailable ? 'pcOffline' : 'network');
       }
     }
   }, 2500);

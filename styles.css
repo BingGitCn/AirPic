@@ -213,6 +213,7 @@ body::before {
 .status[data-state="connected"], .status[data-state="done"] { color: #4a5c39; background: var(--sage-soft); }
 .status[data-state="sending"], .status[data-state="receiving"] { color: #7a5a32; background: var(--tan-soft); }
 .status[data-state="error"] { color: var(--earth); background: #efe0d2; }
+.status[data-state="network"] { color: var(--clay); background: #f3e4d8; }
 
 .unsupported { font-size: 13px; color: var(--earth); margin: 12px 0 0; max-width: 48ch; }
 
@@ -236,6 +237,7 @@ body::before {
 .sender-status[data-state="sending"] { color: #7a5a32; background: var(--tan-soft); }
 .sender-status[data-state="error"], .sender-status[data-state="pcOffline"], .sender-status[data-state="disconnected"] { color: var(--earth); background: #efe0d2; }
 .sender-status[data-state="duplicate"] { color: var(--ink-2); background: var(--linen-2); }
+.sender-status[data-state="network"] { color: var(--clay); background: #f3e4d8; }
 
 .sender-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px var(--pad) 0; max-width: 560px; margin: 0 auto; width: 100%; }
 .action {
