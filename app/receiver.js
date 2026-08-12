@@ -1,7 +1,7 @@
 // app/receiver.js — PC side: pick folder, listen on PeerJS, render QR,
 // receive files into the folder, and (bidirectional) send files to the phone.
-import * as lib from './lib.js?v=18';
-import { t, getLang } from './i18n.js?v=18';
+import * as lib from './lib.js?v=19';
+import { t, getLang } from './i18n.js?v=19';
 
 let dirHandle = null;
 let peer = null;
@@ -22,6 +22,7 @@ export async function initReceiver() {
   const folderName = lib.$('#folder-name');
   const unsupported = lib.$('#unsupported');
   const sendState = lib.$('#send-state');
+  const fileFolder = lib.$('#file-folder');
 
   // --- browser support ---
   if (!lib.fsSupported) {
@@ -38,17 +39,20 @@ export async function initReceiver() {
     pendingDirName = null;
     lib.hide(reconnectBtn);
     folderName.textContent = t('folder.chosen', getLang(), { name: handle.name });
+    fileFolder.textContent = t('file.folder', getLang(), { name: handle.name });
     lib.hide(pickBtn);
     lib.show(changeBtn);
   }
   function refreshFolderUI() {
     if (dirHandle) {
       folderName.textContent = t('folder.chosen', getLang(), { name: dirHandle.name });
+      fileFolder.textContent = t('file.folder', getLang(), { name: dirHandle.name });
       lib.hide(pickBtn);
       lib.show(changeBtn);
       lib.hide(reconnectBtn);
     } else {
       folderName.textContent = t('folder.empty', getLang());
+      fileFolder.textContent = t('file.folder.empty', getLang());
       lib.show(pickBtn);
       lib.hide(changeBtn);
       if (pendingDirName) {
@@ -136,6 +140,7 @@ export async function initReceiver() {
     sendState.textContent = t(connected ? 'send.active' : 'send.idle', getLang());
   }
 
+  refreshFolderUI(); // initial folder / file-folder state
   startListening();
 
   // --- refresh dynamic text on language change ---
