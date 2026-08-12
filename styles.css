@@ -4,8 +4,8 @@
    ============================================================ */
 :root {
   --paper:      #F4F2EB;   /* 月白偏暖的纸底 */
-  --surface:    #FBFAF5;   /* 卡片浮起面 */
-  --ink:        #2B2A26;   /* 墨 */
+  --surface:    #FCFBF6;   /* 卡片浮起面 */
+  --ink:        #2A2925;   /* 墨 */
   --ink-2:      #6B675C;   /* 墨灰(次) */
   --ink-3:      #A6A092;   /* 淡墨(弱) */
   --rule:       #E4DFD2;   /* 发丝线 */
@@ -126,10 +126,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   max-width: 18ch;
 }
 .hero-sub {
-  font-size: clamp(0.98rem, 2.1vw, 1.08rem);
+  font-family: var(--serif);
+  font-size: clamp(1rem, 2.2vw, 1.14rem);
+  line-height: 1.7;
   color: var(--ink-2);
   margin: 0 0 24px;
-  max-width: 46ch;
+  max-width: 44ch;
 }
 
 /* ---------------- panel (the focal action) ---------------- */
@@ -223,7 +225,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   margin: 0;
   font-family: var(--serif);
   font-size: clamp(1rem, 2.2vw, 1.15rem);
-  line-height: 1.6;
+  line-height: 1.75;
   color: var(--ink);
   max-width: 40ch;
 }
@@ -310,7 +312,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .gallery-mark::before { content: ""; position: absolute; inset: 6px; border: 1.4px solid var(--ink-2); border-radius: 3px; }
 .action-label { font-family: var(--serif); font-size: 1.08rem; }
 
-.sender-hint { text-align: center; color: var(--ink-2); font-size: 13.5px; margin: 20px auto 0; max-width: 30ch; padding: 0 var(--pad); }
+.sender-hint { font-family: var(--serif); text-align: center; color: var(--ink-2); font-size: 14.5px; line-height: 1.7; margin: 20px auto 0; max-width: 30ch; padding: 0 var(--pad); }
 .sent-count { text-align: center; font-size: 11.5px; color: var(--ink-3); margin: 12px 0 4px; min-height: 1em; }
 
 .thumbs {

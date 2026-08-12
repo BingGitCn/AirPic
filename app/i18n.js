@@ -1,15 +1,15 @@
 // app/i18n.js — bilingual strings + apply/switch
-// Keys are shared by receiver & sender views. Values are copy; keep tone restrained & literary.
+// Copy is kept short and a touch literary; tone restrained.
 
 export const dict = {
   zh: {
     'kicker': 'AIRPIC · 局域网照片直传',
     'hero.title': '按下快门，它已在这里。',
-    'hero.sub': '手机照片，经局域网直连，落入你选定的文件夹。',
+    'hero.sub': '手机照片，直连入你选定的文件夹。',
     'steps.label': '三步',
     'step.1': '在电脑上，选一个文件夹。',
-    'step.2': '用手机，扫一下屏幕上的码。',
-    'step.3': '拍下，或选好——照片静静落下。',
+    'step.2': '用手机扫描二维码。',
+    'step.3': '拍下或选好——照片静静落下。',
     'folder.select': '选择文件夹',
     'folder.chosen': '已选：{name}',
     'folder.reconnect': '重新连接文件夹',
@@ -24,8 +24,8 @@ export const dict = {
     'received.count': '已收到 {n} 张',
     'qr.hint': '用手机扫码',
     'unsupported': '为获得自动保存体验，请在 Chrome 或 Edge 中打开。',
-    'privacy': '你的照片不经过任何服务器。设备直连，端到端加密。',
-    'footer.note': '同一局域网 · WebRTC 直连 · 无需安装',
+    'privacy': '照片不经任何服务器。设备直连，端到端加密。',
+    'footer.note': '同一局域网 · 端到端加密 · 无需安装',
 
     'sender.title': '发送到这台电脑',
     'sender.status.connecting': '正在连接电脑…',
@@ -36,7 +36,7 @@ export const dict = {
     'sender.status.pcOffline': '电脑不在线，请重扫二维码',
     'sender.camera': '拍照',
     'sender.gallery': '从相册选择',
-    'sender.hint': '拍下或选好，照片自动飞向电脑。',
+    'sender.hint': '拍下或选好，照片即至电脑。',
     'sent.count': '已发送 {n} 张',
     'sender.sent.badge': '已送达',
     'sender.queued.badge': '排队中',
@@ -45,10 +45,10 @@ export const dict = {
   en: {
     'kicker': 'AIRPIC · LOCAL PHOTO LINK',
     'hero.title': 'Press the shutter. It is already here.',
-    'hero.sub': 'Phone photos, over a direct local link, into the folder you choose.',
+    'hero.sub': 'Phone photos, straight into the folder you choose.',
     'steps.label': 'Three steps',
     'step.1': 'On this computer, choose a folder.',
-    'step.2': 'With your phone, scan the code on screen.',
+    'step.2': 'Scan the code with your phone.',
     'step.3': 'Shoot or pick — they land, quietly.',
     'folder.select': 'Choose a folder',
     'folder.chosen': 'Folder: {name}',
@@ -65,7 +65,7 @@ export const dict = {
     'qr.hint': 'Scan with your phone',
     'unsupported': 'For automatic saving, open in Chrome or Edge.',
     'privacy': 'Your photos never touch a server. Direct, end-to-end, encrypted.',
-    'footer.note': 'Same local network · WebRTC direct · Nothing to install',
+    'footer.note': 'Same local network · End-to-end encrypted · Nothing to install',
 
     'sender.title': 'Send to this computer',
     'sender.status.connecting': 'Connecting to the computer…',
@@ -76,7 +76,7 @@ export const dict = {
     'sender.status.pcOffline': 'Computer offline — please rescan',
     'sender.camera': 'Take photo',
     'sender.gallery': 'Pick from gallery',
-    'sender.hint': 'Shoot or pick — photos fly to the computer.',
+    'sender.hint': 'Shoot or pick — photos arrive in an instant.',
     'sent.count': '{n} sent',
     'sender.sent.badge': 'delivered',
     'sender.queued.badge': 'queued',
