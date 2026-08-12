@@ -154,7 +154,11 @@ body::before {
 .btn-quiet:hover { color: var(--sage-d); text-decoration-color: var(--sage); }
 .btn-quiet:active { transform: translateY(1px); }
 
-.folder-name { font-size: 13px; color: var(--ink-2); word-break: break-all; }
+.meta {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  margin-top: 4px; padding-top: 13px; border-top: 1px solid rgba(92,64,51,0.10);
+}
+.folder-name { font-size: 13.5px; color: var(--ink); font-weight: 500; word-break: break-all; }
 .received-count { font-size: 12.5px; color: var(--tan); min-height: 1em; font-weight: 600; }
 
 /* status pill */
