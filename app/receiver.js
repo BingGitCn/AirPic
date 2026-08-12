@@ -89,7 +89,10 @@ function updateReceivedCount() {
 
 function startListening(attempt = 0) {
   const roomId = lib.genRoomId();
-  lib.renderQr(lib.$('#qr-canvas'), lib.roomUrl(roomId));
+  const url = lib.roomUrl(roomId);
+  lib.renderQr(lib.$('#qr-canvas'), url);
+  const urlEl = lib.$('#qr-url');
+  if (urlEl) urlEl.textContent = url;
   setStatus('waiting');
 
   peer = lib.newPeer(roomId);

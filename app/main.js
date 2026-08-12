@@ -35,6 +35,8 @@ function init() {
     lib.show(lib.$('#view-receiver'));
     initReceiver();
   }
+
+  window.__airpicReady = true;
 }
 
 if (document.readyState === 'loading') {

@@ -47,14 +47,17 @@
 2. 仓库 **Settings → Pages → Source**：选 `main` 分支、`/ (root)` 目录，保存。
 3. 等约一分钟，访问 `https://<你的用户名>.github.io/AirPic/`。
 
-本地预览：在项目根目录跑任意静态服务器，例如
+本地预览（在项目根目录）：
 
 ```bash
-python -m http.server 8080
+python serve.py          # 默认 8080；自定义端口： python serve.py 3000
 # 然后浏览器打开 http://localhost:8080/
 ```
 
-> 注意：File System Access API 与 WebRTC 需要安全上下文（HTTPS）。`localhost` 视同安全；局域网 IP 访问则需自行配 HTTPS。
+> 为什么不用 `python -m http.server`？在 Windows 上它常把 `.js` / `.mjs` 当作 `text/plain` 发送，
+> 而浏览器对 `<script type="module">` 强制要求 JavaScript MIME，会导致模块加载失败、页面脚本不执行。
+> `serve.py` 强制 `.js` / `.mjs` 返回 `text/javascript`，规避此问题。也可改用 `npx serve` 等自带正确 MIME 的工具。
+> 注意：File System Access API 与 WebRTC 需要安全上下文（HTTPS）。`localhost` 视同安全；局域网 IP 访问需自行配 HTTPS。
 
 ## 隐私 · Privacy
 

@@ -16,6 +16,9 @@
 </head>
 <body class="role-receiver">
 
+  <!-- boot diagnostic: shown only if the app fails to start (e.g. opened via file://) -->
+  <div id="boot-notice" class="boot-notice" role="alert" hidden></div>
+
   <!-- top bar -->
   <header class="bar">
     <div class="brand">AirPic</div>
@@ -52,6 +55,7 @@
             <canvas id="qr-canvas" width="256" height="256" aria-label="QR code"></canvas>
           </div>
           <div class="qr-hint" data-i18n="qr.hint">Scan with your phone</div>
+          <div class="qr-url mono" id="qr-url" title="pairing url"></div>
           <div class="status" id="qr-status" data-state="waiting" data-i18n="status.waiting">Waiting for connection</div>
         </div>
         <div class="panel-side">
@@ -102,6 +106,25 @@
   <footer class="foot">
     <span class="mono" data-i18n="footer.note">Same local network · WebRTC direct · Nothing to install</span>
   </footer>
+
+  <!-- Boot diagnostics (classic script — runs even if ES modules are blocked by file://) -->
+  <script>
+    (function () {
+      var box = document.getElementById('boot-notice');
+      function tell(msg) { if (box) { box.textContent = msg; box.hidden = false; } }
+      if (location.protocol === 'file:') {
+        tell('请勿双击 index.html 打开——浏览器会拦截本地脚本，所以页面跑不起来。请用 Chrome / Edge，在地址栏访问 http://localhost:8080/   ·   Do not open index.html by double-click. Open http://localhost:8080/ in Chrome/Edge.');
+        return;
+      }
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          if (!window.__airpicReady) {
+            tell('页面未正常启动。请按 F12 打开控制台，把红色报错复制给我。   ·   App did not start. Press F12, copy the red console errors.');
+          }
+        }, 2500);
+      });
+    })();
+  </script>
 
   <!-- PeerJS (UMD, self-contained, exposes window.Peer) -->
   <script src="./vendor/peerjs.min.js"></script>

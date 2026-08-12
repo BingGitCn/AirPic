@@ -47,6 +47,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .mono { font-family: var(--mono); }
 .hidden { display: none !important; }
 
+/* boot diagnostic banner */
+.boot-notice {
+  margin: 0;
+  padding: 12px var(--pad);
+  background: #FFF4E6;
+  color: #7A4A12;
+  border-bottom: 1px solid #EAD9B8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 /* ============================================================
    top bar
    ============================================================ */
@@ -164,6 +175,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 #qr-canvas { display: block; width: 232px; height: 232px; }
 .qr-hint { font-size: 13px; color: var(--ink-muted); }
+.qr-url {
+  font-size: 11px;
+  color: var(--ink-faint);
+  word-break: break-all;
+  max-width: 220px;
+  margin: 0 auto;
+  line-height: 1.5;
+  user-select: all;
+  cursor: text;
+}
 .panel-side { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
 
 /* buttons */
