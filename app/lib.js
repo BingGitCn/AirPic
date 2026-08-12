@@ -48,7 +48,7 @@ export function renderQr(canvas, data) {
   if (!ctx) return;
   canvas.width = size;
   canvas.height = size;
-  ctx.fillStyle = '#FBFAF5';     // background + quiet zone
+  ctx.fillStyle = '#F4F2EB';     // background + quiet zone — match the page paper
   ctx.fillRect(0, 0, size, size);
   ctx.fillStyle = '#2B2A26';     // dark modules (墨)
   for (let r = 0; r < count; r++) {

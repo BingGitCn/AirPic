@@ -162,7 +162,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 26px;
   border: 1px solid var(--rule-celadon);
   border-radius: 14px;
-  background: var(--surface);
+  background: transparent;
   margin-bottom: 14px;
 }
 .panel::before {           /* a 天水碧 tab marking the focal panel */
@@ -176,7 +176,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-frame {
   position: relative;
   padding: 12px;
-  background: var(--surface);
+  background: transparent;
   border: 1px solid var(--rule-celadon);
   border-radius: 10px;
 }
