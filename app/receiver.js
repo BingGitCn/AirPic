@@ -1,7 +1,7 @@
 // app/receiver.js — PC side: pick folder, listen on PeerJS, render QR,
 // receive files into the folder, and (bidirectional) send files to the phone.
-import * as lib from './lib.js?v=23';
-import { t, getLang } from './i18n.js?v=23';
+import * as lib from './lib.js?v=24';
+import { t, getLang } from './i18n.js?v=24';
 
 let dirHandle = null;
 let peer = null;
