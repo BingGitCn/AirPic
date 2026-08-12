@@ -12,7 +12,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=16" />
+  <link rel="stylesheet" href="./styles.css?v=17" />
 </head>
 <body class="role-receiver">
 
@@ -58,10 +58,24 @@
             <span class="received-count mono" id="received-count"></span>
           </div>
           <button id="new-code-btn" class="btn-quiet" type="button" data-i18n="pairing.new">New pairing code</button>
+          <button id="copy-link-btn" class="btn-quiet" type="button" data-i18n="link.copy">Copy pairing link</button>
         </div>
       </section>
 
       <p class="unsupported hidden" id="unsupported" data-i18n="unsupported">For automatic saving, open in Chrome or Edge.</p>
+
+      <!-- send to phone (PC → phone, bidirectional) -->
+      <section class="send-zone" id="send-zone">
+        <div class="send-head">
+          <span class="send-title" data-i18n="send.title">Send to phone</span>
+          <span class="send-state" id="send-state" data-i18n="send.idle">Connects once a phone joins</span>
+        </div>
+        <label class="drop" id="drop">
+          <input id="pc-file-input" type="file" multiple hidden />
+          <span class="drop-hint" data-i18n="send.drop">Drop files · click to choose · paste</span>
+        </label>
+        <div class="activity" id="activity" aria-live="polite"></div>
+      </section>
 
       <div class="belief">
         <span class="rule" aria-hidden="true"></span>
@@ -88,9 +102,9 @@
         <span class="action-label" data-i18n="sender.camera">Take photo</span>
       </label>
       <label class="action gallery">
-        <input id="gallery-input" type="file" accept="image/*" multiple hidden />
+        <input id="gallery-input" type="file" multiple hidden />
         <span class="action-mark gallery-mark" aria-hidden="true"></span>
-        <span class="action-label" data-i18n="sender.gallery">Pick from gallery</span>
+        <span class="action-label" data-i18n="sender.gallery">Pick file</span>
       </label>
     </div>
 
@@ -98,6 +112,11 @@
     <div class="sent-count mono" id="sent-count"></div>
 
     <div class="thumbs" id="thumbs" aria-live="polite"></div>
+
+    <div class="recv-block">
+      <div class="recv-head" data-i18n="recv.title">From computer</div>
+      <div class="recv-list" id="recv-list" aria-live="polite"></div>
+    </div>
   </main>
 
   <footer class="foot">
@@ -128,6 +147,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=16"></script>
+  <script type="module" src="./app/main.js?v=17"></script>
 </body>
 </html>

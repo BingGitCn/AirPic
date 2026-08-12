@@ -254,3 +254,78 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ============================================================
+   bidirectional: PC send zone, activity list, phone receive
+   ============================================================ */
+.send-zone {
+  margin: 24px 0 8px; padding: 20px 24px;
+  background: var(--linen-2);
+  border-radius: 34px 24px 36px 26px;
+  box-shadow: var(--sh-press);
+}
+.send-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.send-title { font-family: var(--serif); font-weight: 600; font-size: 1.1rem; color: var(--earth); }
+.send-state { font-size: 12px; color: var(--ink-2); }
+
+.drop {
+  display: block; text-align: center; cursor: pointer;
+  padding: 22px 16px; border-radius: 22px 16px 22px 16px;
+  border: 1.5px dashed var(--line-2);
+  color: var(--ink-2); font-size: 13.5px;
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease;
+}
+.drop:hover, .drop.over { background: var(--cream); border-color: var(--sage); color: var(--earth); }
+
+.activity { display: grid; gap: 8px; margin-top: 14px; }
+.act {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px 10px;
+  background: var(--cream); border-radius: 16px 12px 16px 12px; padding: 9px 14px;
+  box-shadow: var(--sh-press);
+}
+.act-tag {
+  font-size: 11px; font-weight: 600; color: var(--cream);
+  width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.act[data-dir="in"] .act-tag { background: var(--sage); }
+.act[data-dir="out"] .act-tag { background: var(--tan); }
+.act-name { font-size: 13px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.act-meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); white-space: nowrap; }
+.act-bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(92,64,51,0.12); overflow: hidden; }
+.act-fill { display: block; height: 100%; width: 0; background: var(--sage); transition: width .12s linear; }
+.act[data-dir="out"] .act-fill { background: var(--tan); }
+.act.done .act-fill { width: 100% !important; }
+.act.done .act-meta { color: var(--sage-d); }
+
+/* phone: received from computer */
+.recv-block { margin: 10px auto 0; max-width: 640px; width: 100%; padding: 0 var(--pad) clamp(20px, 6vw, 40px); }
+.recv-head { font-size: 12px; color: var(--ink-3); margin-bottom: 10px; letter-spacing: 0.04em; }
+.recv-list { display: grid; gap: 8px; }
+.recv {
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center;
+  background: var(--linen-2); border-radius: 16px 12px 16px 12px; padding: 10px 14px;
+}
+.recv-name { font-size: 13px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recv-meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); }
+.recv-bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(92,64,51,0.12); overflow: hidden; }
+.recv-fill { display: block; height: 100%; width: 0; background: var(--sage); transition: width .12s linear; }
+.recv.ready .recv-fill { width: 100% !important; }
+.recv-save {
+  grid-column: 1 / -1; justify-self: end;
+  border: none; border-radius: 9999px; padding: 7px 16px;
+  font-size: 12.5px; font-weight: 600; color: var(--cream); background: var(--earth);
+  transition: background-color 300ms ease, transform 300ms ease;
+}
+.recv-save:hover:not(:disabled) { background: var(--earth-2); transform: translateY(1px); }
+.recv-save:active:not(:disabled) { transform: translateY(2px); }
+.recv-save:disabled { opacity: 0.45; cursor: not-allowed; background: var(--ink-3); }
+
+/* tiny transfer-rate readout on phone thumbnails */
+.thumb-rate {
+  position: absolute; left: 6px; bottom: 6px;
+  font-family: var(--mono); font-size: 8.5px; line-height: 1;
+  color: #fff; background: rgba(74,63,55,0.65);
+  padding: 2px 5px; border-radius: 6px;
+  pointer-events: none;
+}

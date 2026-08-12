@@ -1,14 +1,16 @@
-// app/receiver.js — PC side: pick folder, listen on PeerJS, render QR, write incoming files.
-import * as lib from './lib.js?v=16';
-import { t, getLang } from './i18n.js?v=16';
+// app/receiver.js — PC side: pick folder, listen on PeerJS, render QR,
+// receive files into the folder, and (bidirectional) send files to the phone.
+import * as lib from './lib.js?v=17';
+import { t, getLang } from './i18n.js?v=17';
 
 let dirHandle = null;
 let peer = null;
 let receivedCount = 0;
+let activeConn = null;
+let currentUrl = '';
 
 let current = null;          // the file currently being written
 let processChain = Promise.resolve();  // serializes meta → chunks → end per connection
-
 let pendingDirName = null;   // name shown on the reconnect button (perm pending)
 
 export async function initReceiver() {
@@ -16,8 +18,10 @@ export async function initReceiver() {
   const changeBtn = lib.$('#change-btn');
   const reconnectBtn = lib.$('#reconnect-btn');
   const newCodeBtn = lib.$('#new-code-btn');
+  const copyLinkBtn = lib.$('#copy-link-btn');
   const folderName = lib.$('#folder-name');
   const unsupported = lib.$('#unsupported');
+  const sendState = lib.$('#send-state');
 
   // --- browser support ---
   if (!lib.fsSupported) {
@@ -57,7 +61,7 @@ export async function initReceiver() {
     try { setFolder(await lib.pickDirectory()); } catch (e) { /* cancelled */ }
   }
 
-  // --- restore previously granted folder (permission is origin-bound) ---
+  // --- restore previously granted folder ---
   if (lib.fsSupported) {
     const stored = await lib.getStoredDir();
     if (stored) {
@@ -75,7 +79,7 @@ export async function initReceiver() {
 
   // --- actions ---
   pickBtn.addEventListener('click', chooseFolder);
-  changeBtn.addEventListener('click', chooseFolder);   // forget current + re-pick
+  changeBtn.addEventListener('click', chooseFolder);
   reconnectBtn.addEventListener('click', async () => {
     const stored = await lib.getStoredDir();
     if (!stored) return;
@@ -83,11 +87,54 @@ export async function initReceiver() {
     if (ok) setFolder(stored);
   });
   newCodeBtn.addEventListener('click', () => {
-    // rotate to a fresh room id + QR (the old pairing code stops working)
     try { peer && peer.destroy && peer.destroy(); } catch {}
     current = null;
     startListening();
   });
+
+  // copy pairing link
+  copyLinkBtn.addEventListener('click', async () => {
+    if (!currentUrl) return;
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      const orig = copyLinkBtn.textContent;
+      copyLinkBtn.textContent = t('link.copied', getLang());
+      setTimeout(() => { copyLinkBtn.textContent = orig; }, 1600);
+    } catch (e) { /* clipboard blocked */ }
+  });
+
+  // --- PC → phone sending: drop / pick / paste ---
+  const drop = lib.$('#drop');
+  const fileInput = lib.$('#pc-file-input');
+
+  drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    sendToPhone([...(e.dataTransfer ? e.dataTransfer.files : [])]);
+  });
+  fileInput.addEventListener('change', () => {
+    sendToPhone([...(fileInput.files || [])]);
+    fileInput.value = '';
+  });
+  document.addEventListener('paste', (e) => {
+    const files = [...(e.clipboardData ? e.clipboardData.files : [])];
+    if (files.length) sendToPhone(files);
+  });
+
+  function sendToPhone(files) {
+    if (!activeConn || !activeConn.open) return;   // send-state already shows the idle hint
+    for (const f of files) {
+      const node = addActivity('out', f.name || 'file');
+      lib.sendFile(activeConn, f, (got, total, start) => updateActivity(node, got, total, start))
+        .then(() => markActivityDone(node));
+    }
+  }
+
+  function setSendState(connected) {
+    sendState.textContent = t(connected ? 'send.active' : 'send.idle', getLang());
+  }
 
   startListening();
 
@@ -96,7 +143,44 @@ export async function initReceiver() {
     setStatus(currentPeerState);
     refreshFolderUI();
     updateReceivedCount();
+    setSendState(!!(activeConn && activeConn.open));
   });
+}
+
+// ---------------- activity list (both directions) ----------------
+function addActivity(dir, name) {
+  const node = lib.el(`
+    <div class="act" data-dir="${dir}">
+      <span class="act-tag">${t(dir === 'in' ? 'act.in' : 'act.out', getLang())}</span>
+      <span class="act-name"></span>
+      <span class="act-meta"></span>
+      <span class="act-bar"><span class="act-fill"></span></span>
+    </div>`);
+  node.querySelector('.act-name').textContent = name;
+  lib.$('#activity').prepend(node);
+  return node;
+}
+
+function updateActivity(node, got, total, startMs) {
+  const bar = node.querySelector('.act-fill');
+  if (bar) bar.style.width = (total > 0 ? Math.min(100, (got / total) * 100) : 0).toFixed(1) + '%';
+  const now = performance.now();
+  if (now - (node._lastMeta || 0) > 120) {
+    node._lastMeta = now;
+    const meta = node.querySelector('.act-meta');
+    if (!meta) return;
+    const ms = now - startMs;
+    meta.textContent = lib.fmtRate(got, ms) + (got < total ? ' · ' + lib.fmtEta(total - got, got, ms) : '');
+  }
+}
+
+function markActivityDone(node) {
+  if (!node) return;
+  node.classList.add('done');
+  const fill = node.querySelector('.act-fill');
+  if (fill) fill.style.width = '100%';
+  const meta = node.querySelector('.act-meta');
+  if (meta) meta.textContent = '✓';
 }
 
 let currentPeerState = 'waiting';
@@ -116,17 +200,17 @@ function updateReceivedCount() {
 
 function startListening(attempt = 0) {
   const roomId = lib.genRoomId();
-  lib.renderQr(lib.$('#qr-canvas'), lib.roomUrl(roomId));
+  currentUrl = lib.roomUrl(roomId);
+  lib.renderQr(lib.$('#qr-canvas'), currentUrl);
   setStatus('waiting');
 
   peer = lib.newPeer(roomId);
 
-  peer.on('open', () => { /* registered with broker; QR already showing */ });
+  peer.on('open', () => { /* registered with broker */ });
 
   peer.on('connection', (conn) => setupConnection(conn));
 
   peer.on('disconnected', () => {
-    // broker link dropped — try to reattach silently
     try { peer.reconnect(); } catch {}
   });
 
@@ -134,11 +218,10 @@ function startListening(attempt = 0) {
     console.warn('[AirPic peer error]', err && err.type, err && err.message);
     const type = err && err.type;
     if (type === 'unavailable-id' || type === 'network' || type === 'server-error' || type === 'socket-error') {
-      // registration failed or broker hiccup → fresh id, fresh QR
       try { peer.destroy(); } catch {}
       setTimeout(() => startListening(attempt + 1), 900);
     } else if (type === 'peer-unavailable') {
-      // a phone tried a stale id; ignore — current QR is valid
+      // stale id from a phone — ignore
     } else {
       setStatus('error');
     }
@@ -146,18 +229,27 @@ function startListening(attempt = 0) {
 }
 
 function setupConnection(conn) {
+  activeConn = conn;
   processChain = Promise.resolve();
   if (conn.dataChannel) {
     try { conn.dataChannel.binaryType = 'arraybuffer'; } catch {}
   }
 
-  conn.on('open', () => setStatus('connected'));
+  conn.on('open', () => {
+    setStatus('connected');
+    setSendState(true);
+  });
   conn.on('data', (data) => handle(conn, data));
-  conn.on('close', () => { setStatus('waiting'); current = null; });
+  conn.on('close', () => {
+    setStatus('waiting');
+    current = null;
+    activeConn = null;
+    setSendState(false);
+  });
   conn.on('error', (e) => { console.warn('[AirPic conn error]', e); setStatus('error'); });
 }
 
-// Ordered processing so that an async 'meta' finishes before the first chunk is written.
+// Ordered processing: async 'meta' finishes before the first chunk is written.
 function handle(conn, data) {
   processChain = processChain.then(async () => {
     if (data instanceof ArrayBuffer) {
@@ -171,6 +263,7 @@ function handle(conn, data) {
     if (data && typeof data === 'object') {
       if (data.t === 'meta') return await startFile(conn, data);
       if (data.t === 'end') return await endFile(conn, data.id);
+      if (data.t === 'ack' || data.t === 'nack') lib.routeAck(data.id);
     }
   }).catch((e) => console.warn('[AirPic process error]', e));
 }
@@ -178,7 +271,7 @@ function handle(conn, data) {
 async function startFile(conn, msg) {
   if (!dirHandle) {
     current = null;
-    safeSend(conn, { t: 'nack', id: msg.id, reason: 'no-folder' });
+    lib.safeSend(conn, { t: 'nack', id: msg.id, reason: 'no-folder' });
     return;
   }
   try {
@@ -191,19 +284,22 @@ async function startFile(conn, msg) {
       got: 0,
       writable,
       chain: Promise.resolve(),
+      start: performance.now(),
+      node: addActivity('in', handle.name),
     };
     setStatus('receiving');
   } catch (e) {
     console.warn('[AirPic write open failed]', e);
-    safeSend(conn, { t: 'nack', id: msg.id, reason: 'write-failed' });
+    lib.safeSend(conn, { t: 'nack', id: msg.id, reason: 'write-failed' });
     current = null;
   }
 }
 
 function writeChunk(buf) {
   const c = current;
-  if (!c) return; // chunk for a file we couldn't open — drop
+  if (!c) return;
   c.got += buf.byteLength;
+  updateActivity(c.node, c.got, c.size, c.start);
   c.chain = c.chain.then(() => c.writable.write(buf)).catch((e) => {
     console.warn('[AirPic write chunk failed]', e);
   });
@@ -218,19 +314,12 @@ async function endFile(conn, id) {
     await c.writable.close();
     receivedCount += 1;
     updateReceivedCount();
-    safeSend(conn, { t: 'ack', id, ok: true });
+    markActivityDone(c.node);
+    lib.safeSend(conn, { t: 'ack', id, ok: true });
     setStatus('connected');
   } catch (e) {
     console.warn('[AirPic close failed]', e);
-    safeSend(conn, { t: 'ack', id, ok: false });
+    lib.safeSend(conn, { t: 'ack', id, ok: false });
     setStatus('error');
-  }
-}
-
-function safeSend(conn, obj) {
-  try {
-    if (conn && conn.open) conn.send(obj);
-  } catch (e) {
-    console.warn('[AirPic send failed]', e);
   }
 }

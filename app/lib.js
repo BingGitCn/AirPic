@@ -167,3 +167,88 @@ export function fmtBytes(n) {
   if (n < 1073741824) return `${(n / 1048576).toFixed(1)} MB`;
   return `${(n / 1073741824).toFixed(2)} GB`;
 }
+
+// ---------------- file transfer (shared by both directions) ----------------
+const CHUNK_SIZE = 16 * 1024;          // 16 KiB
+const LOW_THRESHOLD = 1 << 20;         // 1 MiB bufferedAmountLowThreshold
+let sendSeq = 0;
+const pendingAcks = new Map();         // id -> { resolve, timer }
+
+export function safeSend(conn, obj) {
+  try { if (conn && conn.open) conn.send(obj); } catch (e) { console.warn('[AirPic send]', e); }
+}
+
+// Called by a receiver when it gets an ack/nack for a file this side sent.
+export function routeAck(id) {
+  const slot = pendingAcks.get(id);
+  if (slot) { clearTimeout(slot.timer); pendingAcks.delete(id); slot.resolve(); }
+}
+
+// Send one file over the connection with backpressure; resolves on ack/timeout.
+// onProgress(offset, total, startMs) fires as chunks are queued.
+export function sendFile(conn, file, onProgress) {
+  return new Promise(async (resolve) => {
+    if (!conn || !conn.open) { resolve({ ok: false }); return; }
+    const dc = conn.dataChannel;
+    if (dc) dc.bufferedAmountLowThreshold = LOW_THRESHOLD;
+    let buf;
+    try { buf = await file.arrayBuffer(); } catch (e) { resolve({ ok: false }); return; }
+    const id = ++sendSeq;
+    const name = file.name || `file-${id}`;
+    safeSend(conn, { t: 'meta', id, name, size: file.size, mime: file.type || '' });
+    const total = buf.byteLength;
+    let offset = 0;
+    const start = performance.now();
+    await new Promise((pResolve) => {
+      const pump = () => {
+        while (offset < total) {
+          if (dc && dc.bufferedAmount > LOW_THRESHOLD) {
+            dc.addEventListener('bufferedamountlow', pump, { once: true });
+            return;
+          }
+          const end = Math.min(offset + CHUNK_SIZE, total);
+          try { conn.send(buf.slice(offset, end)); } catch (e) { pResolve(); return; }
+          offset = end;
+          if (onProgress) onProgress(offset, total, start);
+        }
+        safeSend(conn, { t: 'end', id });
+        const slot = {};
+        pendingAcks.set(id, slot);
+        slot.resolve = () => { pendingAcks.delete(id); pResolve(); };
+        slot.timer = setTimeout(() => { if (pendingAcks.has(id)) { pendingAcks.delete(id); pResolve(); } }, 60000);
+      };
+      pump();
+    });
+    resolve({ ok: true, id, name, size: total });
+  });
+}
+
+// ---------------- rate / ETA formatting ----------------
+export function fmtRate(bytes, ms) {
+  if (ms <= 0) return '';
+  const r = bytes / (ms / 1000);
+  if (r < 1024) return r.toFixed(0) + ' B/s';
+  if (r < 1048576) return (r / 1024).toFixed(1) + ' KB/s';
+  return (r / 1048576).toFixed(1) + ' MB/s';
+}
+export function fmtEta(bytesLeft, bytesDone, ms) {
+  if (bytesDone <= 0 || ms <= 0) return '';
+  const rate = bytesDone / (ms / 1000);
+  if (rate <= 0) return '';
+  const s = bytesLeft / rate;
+  if (!isFinite(s) || s <= 0) return '';
+  if (s < 60) return Math.ceil(s) + 's';
+  return Math.ceil(s / 60) + 'm';
+}
+
+// Trigger a browser download for a received blob (used on the phone side).
+export function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}

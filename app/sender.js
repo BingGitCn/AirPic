@@ -1,9 +1,7 @@
-// app/sender.js — phone side: connect to room, pick/capture photos, send in 16KB chunks with backpressure.
-import * as lib from './lib.js?v=16';
-import { t, getLang } from './i18n.js?v=16';
-
-const CHUNK = 16 * 1024;          // 16 KiB — safe under SCTP message-size limits
-const LOW = 1 << 20;              // 1 MiB bufferedAmountLowThreshold
+// app/sender.js — phone side: connect to room, send photos/files to the computer,
+// and receive files the computer sends back (save to downloads).
+import * as lib from './lib.js?v=17';
+import { t, getLang } from './i18n.js?v=17';
 
 let peer = null;
 let conn = null;
@@ -11,7 +9,10 @@ let queue = [];
 let busy = false;
 let seq = 0;
 let sentCount = 0;
-const ackWaiters = new Map();     // id -> { resolve, timer }
+
+// receiving from the computer (PC → phone)
+let recvCurrent = null;
+let recvChain = Promise.resolve();
 
 export function initSender(roomId) {
   setStatus('connecting');
@@ -24,11 +25,10 @@ export function initSender(roomId) {
 
   peer.on('error', (err) => {
     console.warn('[AirPic peer error]', err && err.type, err && err.message);
-    // 'peer-unavailable' (stale QR / PC not ready) is handled by connectWithRetry's timer.
     setStatus('error');
   });
 
-  // inputs
+  // inputs (gallery accepts any file type now)
   lib.$('#camera-input').addEventListener('change', onPick);
   lib.$('#gallery-input').addEventListener('change', onPick);
 
@@ -52,19 +52,15 @@ function updateSentCount() {
   el.textContent = sentCount ? t('sent.count', getLang(), { n: sentCount }) : '';
 }
 
-// --- connect, retrying briefly in case the PC is still registering with the broker ---
+// --- connect, retrying briefly in case the PC is still registering ---
 function connectWithRetry(roomId, attempt = 0) {
-  conn = peer.connect(roomId, { reliable: true }); // PeerJS default serialization (objects + ArrayBuffer)
+  conn = peer.connect(roomId, { reliable: true }); // default serialization (objects + ArrayBuffer)
 
   conn.on('open', () => { setStatus('connected'); drain(); });
-
   conn.on('data', onData);
-
   conn.on('close', () => { setStatus('disconnected'); conn = null; });
-
   conn.on('error', (e) => console.warn('[AirPic conn error]', e));
 
-  // if the channel never opens (PC not online / stale QR), retry a few times
   const openTimer = setTimeout(() => {
     if (!conn || !conn.open) {
       if (attempt < 6) {
@@ -95,72 +91,19 @@ async function drain() {
   if (busy) return;
   busy = true;
   while (queue.length) {
-    if (!conn || !conn.open) break; // will resume when the channel (re)opens
+    if (!conn || !conn.open) break; // resume when the channel (re)opens
     const job = queue.shift();
-    await sendFile(job.id, job.file);
+    await sendOne(job.id, job.file);
   }
   busy = false;
   if (conn && conn.open && !queue.length) setStatus('connected');
 }
 
-function sendFile(id, file) {
+function sendOne(id, file) {
   return new Promise(async (resolve) => {
-    const name = file.name || `photo-${id}`;
-    const mime = file.type || 'image/*';
-    const size = file.size;
-
     if (!conn || !conn.open) { queue.unshift({ id, file }); resolve(); return; }
-
-    const dc = conn.dataChannel;
-    if (dc) dc.bufferedAmountLowThreshold = LOW;
-
-    let buf;
-    try {
-      buf = await file.arrayBuffer();
-    } catch (e) {
-      console.warn('[AirPic read failed]', e);
-      markThumb(id, 'error');
-      resolve();
-      return;
-    }
-
     setStatus('sending');
-    safeSend({ t: 'meta', id, name, size, mime });
-
-    const total = buf.byteLength;
-    let offset = 0;
-
-    await new Promise((pResolve) => {
-      const pump = () => {
-        while (offset < total) {
-          if (dc && dc.bufferedAmount > LOW) {
-            // channel saturated — wait for it to drain, then resume
-            dc.addEventListener('bufferedamountlow', pump, { once: true });
-            return;
-          }
-          const end = Math.min(offset + CHUNK, total);
-          try {
-            conn.send(buf.slice(offset, end)); // ArrayBuffer chunk
-          } catch (e) {
-            console.warn('[AirPic send chunk failed]', e);
-            pResolve();
-            return;
-          }
-          offset = end;
-          updateThumb(id, offset, total);
-        }
-        // all chunks queued → announce end, wait for disk-ack (bounded by a timeout)
-        safeSend({ t: 'end', id });
-        const slot = {};
-        ackWaiters.set(id, slot);
-        slot.resolve = () => { ackWaiters.delete(id); pResolve(); };
-        slot.timer = setTimeout(() => {
-          if (ackWaiters.has(id)) { ackWaiters.delete(id); pResolve(); }
-        }, 60000);
-      };
-      pump();
-    });
-
+    await lib.sendFile(conn, file, (got, total, start) => updateThumb(id, got, total, start));
     markThumb(id, 'done');
     sentCount += 1;
     updateSentCount();
@@ -168,22 +111,89 @@ function sendFile(id, file) {
   });
 }
 
+// --- incoming from the computer (PC → phone): download + save ---
 function onData(data) {
-  if (!data || typeof data !== 'object') return; // ignore stray binary (we only expect ack/nack objects here)
-  if (data.t === 'ack' || data.t === 'nack') {
-    const slot = ackWaiters.get(data.id);
-    if (slot) {
-      clearTimeout(slot.timer);
-      slot.resolve();
+  recvChain = recvChain.then(async () => {
+    if (data instanceof ArrayBuffer) {
+      if (recvCurrent) { recvCurrent.chunks.push(data); updateRecvProgress(); }
+      return;
     }
-    if (data.t === 'nack' && data.reason === 'no-folder') {
-      setStatus('pcOffline'); // PC has no folder chosen
+    if (ArrayBuffer.isView(data)) {
+      if (recvCurrent) {
+        recvCurrent.chunks.push(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
+        updateRecvProgress();
+      }
+      return;
     }
+    if (data && typeof data === 'object') {
+      if (data.t === 'meta') {
+        recvCurrent = {
+          id: data.id,
+          name: data.name || 'file',
+          size: data.size || 0,
+          chunks: [],
+          start: performance.now(),
+          node: addRecvItem(data.name || 'file'),
+        };
+      } else if (data.t === 'end') {
+        if (recvCurrent) {
+          const c = recvCurrent;
+          recvCurrent = null;
+          c.blob = new Blob(c.chunks, { type: 'application/octet-stream' });
+          markRecvReady(c);
+          lib.safeSend(conn, { t: 'ack', id: c.id, ok: true });
+        }
+      } else if (data.t === 'ack' || data.t === 'nack') {
+        lib.routeAck(data.id);
+        if (data.t === 'nack' && data.reason === 'no-folder') setStatus('pcOffline');
+      }
+    }
+  }).catch((e) => console.warn('[AirPic recv error]', e));
+}
+
+function addRecvItem(name) {
+  const node = lib.el(`
+    <div class="recv">
+      <span class="recv-name"></span>
+      <span class="recv-meta"></span>
+      <span class="recv-bar"><span class="recv-fill"></span></span>
+      <button class="recv-save" type="button" disabled>${t('recv.save', getLang())}</button>
+    </div>`);
+  node.querySelector('.recv-name').textContent = name;
+  lib.$('#recv-list').prepend(node);
+  return node;
+}
+
+function updateRecvProgress() {
+  const c = recvCurrent;
+  if (!c || !c.node) return;
+  const got = c.chunks.reduce((n, b) => n + b.byteLength, 0);
+  const fill = c.node.querySelector('.recv-fill');
+  if (fill) fill.style.width = (c.size > 0 ? Math.min(100, (got / c.size) * 100) : 0).toFixed(1) + '%';
+  const now = performance.now();
+  if (now - (c.node._lastMeta || 0) > 120) {
+    c.node._lastMeta = now;
+    const meta = c.node.querySelector('.recv-meta');
+    if (meta) meta.textContent = lib.fmtRate(got, now - c.start);
   }
 }
 
-function safeSend(obj) {
-  try { if (conn && conn.open) conn.send(obj); } catch (e) { console.warn('[AirPic send]', e); }
+function markRecvReady(c) {
+  if (!c.node) return;
+  c.node.classList.add('ready');
+  const fill = c.node.querySelector('.recv-fill');
+  if (fill) fill.style.width = '100%';
+  const meta = c.node.querySelector('.recv-meta');
+  if (meta) meta.textContent = c.size ? lib.fmtBytes(c.size) : '✓';
+  const btn = c.node.querySelector('.recv-save');
+  if (btn) {
+    btn.disabled = false;
+    btn.addEventListener('click', () => {
+      lib.downloadBlob(c.blob, c.name);
+      btn.textContent = t('recv.saved', getLang());
+      btn.disabled = true;
+    });
+  }
 }
 
 // ---------------- thumbnails ----------------
@@ -192,6 +202,7 @@ function addThumb(file, id) {
     <div class="thumb queued" data-id="${id}">
       <img alt="">
       <div class="thumb-bar"><div class="thumb-fill"></div></div>
+      <div class="thumb-rate"></div>
       <div class="thumb-state">${t('sender.queued.badge', getLang())}</div>
     </div>`);
   const img = node.querySelector('img');
@@ -201,11 +212,17 @@ function addThumb(file, id) {
   lib.$('#thumbs').prepend(node);
 }
 
-function updateThumb(id, got, total) {
+function updateThumb(id, got, total, startMs) {
   const node = lib.$(`.thumb[data-id="${id}"]`);
   if (!node) return;
   const pct = total > 0 ? Math.min(100, (got / total) * 100) : 0;
   node.querySelector('.thumb-fill').style.width = pct.toFixed(1) + '%';
+  const now = performance.now();
+  if (now - (node._lastMeta || 0) > 120) {
+    node._lastMeta = now;
+    const rate = node.querySelector('.thumb-rate');
+    if (rate) rate.textContent = lib.fmtRate(got, now - startMs);
+  }
 }
 
 function markThumb(id, state) {
