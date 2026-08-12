@@ -156,19 +156,15 @@ body::after {
 .belief .rule { display: block; width: 30px; height: 2px; background: var(--sage); border-radius: 2px; }
 .belief p { margin: 0; font-family: var(--serif); font-size: clamp(1.02rem, 2.3vw, 1.18rem); line-height: 1.7; color: var(--ink); max-width: 40ch; }
 
-/* steps — clean numbered list, sage badges */
-.steps { list-style: none; margin: 44px 0 0; padding: 0; display: grid; gap: 18px; }
-.steps li { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 14px; }
-.step-no {
-  font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--cream);
-  background: var(--sage); width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center;
-}
-.step-text { font-family: var(--serif); font-size: clamp(1.04rem, 2.3vw, 1.2rem); line-height: 1.45; color: var(--ink); }
+/* tagline — calm, non-uppercase label above the hero */
+.tagline { font-size: 13px; font-weight: 500; color: var(--sage-d); margin: 0 0 14px; letter-spacing: 0.02em; }
 
-@media (min-width: 640px) {
-  .steps { grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .steps li { grid-template-columns: 1fr; gap: 12px; align-items: start; }
+/* flow — a quiet one-line "how it works" strip */
+.flow {
+  margin: 44px 0 0; padding-top: 22px; border-top: 1px solid var(--line);
+  text-align: center; font-family: var(--serif);
+  font-size: clamp(1rem, 2.2vw, 1.12rem); color: var(--ink-2); line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 /* footer */

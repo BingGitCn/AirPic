@@ -12,7 +12,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Serif+SC:wght@400;500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=9" />
+  <link rel="stylesheet" href="./styles.css?v=10" />
 </head>
 <body class="role-receiver">
 
@@ -28,6 +28,8 @@
   <!-- ============ RECEIVER (PC) ============ -->
   <main id="view-receiver" class="view view-receiver">
     <section class="wrap">
+
+      <div class="tagline" data-i18n="tagline">Direct photo transfer · local network</div>
 
       <h1 class="hero-title" data-i18n="hero.title">Press the shutter. It is already here.</h1>
       <p class="hero-sub" data-i18n="hero.sub">Phone photos, over a direct local link, into the folder you choose.</p>
@@ -57,20 +59,7 @@
         <p data-i18n="privacy">Your photos never touch a server. Direct, end-to-end, encrypted.</p>
       </div>
 
-      <ol class="steps" aria-label="steps">
-        <li>
-          <span class="step-no">01</span>
-          <span class="step-text" data-i18n="step.1">On this computer, choose a folder.</span>
-        </li>
-        <li>
-          <span class="step-no">02</span>
-          <span class="step-text" data-i18n="step.2">With your phone, scan the code on screen.</span>
-        </li>
-        <li>
-          <span class="step-no">03</span>
-          <span class="step-text" data-i18n="step.3">Shoot or pick — they land, quietly.</span>
-        </li>
-      </ol>
+      <p class="flow" data-i18n="flow">Choose folder · Scan code · Shoot or pick · Lands</p>
 
     </section>
   </main>
@@ -130,6 +119,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=9"></script>
+  <script type="module" src="./app/main.js?v=10"></script>
 </body>
 </html>

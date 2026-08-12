@@ -1,15 +1,13 @@
 // app/i18n.js — bilingual strings + apply/switch
-// Copy is kept short and a touch literary; tone restrained.
+// Copy: short, confident, a touch literary.
 
 export const dict = {
   zh: {
-    'kicker': 'AIRPIC · 局域网照片直传',
-    'hero.title': '按下快门，它已在这里。',
-    'hero.sub': '手机照片，直连入你选定的文件夹。',
-    'steps.label': '三步',
-    'step.1': '在电脑上，选一个文件夹。',
-    'step.2': '用手机扫描二维码。',
-    'step.3': '拍下或选好——照片静静落下。',
+    'tagline': '局域网照片直传',
+    'hero.title': '快门一按，即达。',
+    'hero.sub': '选个文件夹，手机扫一扫，照片便静静落下。',
+    'flow': '选文件夹 · 扫二维码 · 拍下或选好 · 落下',
+
     'folder.select': '选择文件夹',
     'folder.chosen': '已选：{name}',
     'folder.reconnect': '重新连接文件夹',
@@ -24,7 +22,7 @@ export const dict = {
     'received.count': '已收到 {n} 张',
     'qr.hint': '用手机扫码',
     'unsupported': '为获得自动保存体验，请在 Chrome 或 Edge 中打开。',
-    'privacy': '照片不经任何服务器。设备直连，端到端加密。',
+    'privacy': '不经服务器，端到端加密，设备直连。',
     'footer.note': '同一局域网 · 端到端加密 · 无需安装',
 
     'sender.title': '发送到这台电脑',
@@ -43,13 +41,11 @@ export const dict = {
     'error.noFolder': '电脑端尚未选择文件夹'
   },
   en: {
-    'kicker': 'AIRPIC · LOCAL PHOTO LINK',
-    'hero.title': 'Press the shutter. It is already here.',
-    'hero.sub': 'Phone photos, straight into the folder you choose.',
-    'steps.label': 'Three steps',
-    'step.1': 'On this computer, choose a folder.',
-    'step.2': 'Scan the code with your phone.',
-    'step.3': 'Shoot or pick — they land, quietly.',
+    'tagline': 'Direct photo transfer · local network',
+    'hero.title': 'One shutter press — it’s there.',
+    'hero.sub': 'Pick a folder, scan with your phone, and the photos land quietly.',
+    'flow': 'Choose folder · Scan code · Shoot or pick · Lands',
+
     'folder.select': 'Choose a folder',
     'folder.chosen': 'Folder: {name}',
     'folder.reconnect': 'Reconnect folder',
@@ -64,7 +60,7 @@ export const dict = {
     'received.count': '{n} received',
     'qr.hint': 'Scan with your phone',
     'unsupported': 'For automatic saving, open in Chrome or Edge.',
-    'privacy': 'Your photos never touch a server. Direct, end-to-end, encrypted.',
+    'privacy': 'No servers. End-to-end encrypted. Direct between devices.',
     'footer.note': 'Same local network · End-to-end encrypted · Nothing to install',
 
     'sender.title': 'Send to this computer',
