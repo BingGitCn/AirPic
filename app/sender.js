@@ -1,7 +1,7 @@
 // app/sender.js — phone side: connect to room, send photos/files to the computer,
 // and receive files the computer sends back (save to downloads).
-import * as lib from './lib.js?v=21';
-import { t, getLang } from './i18n.js?v=21';
+import * as lib from './lib.js?v=22';
+import { t, getLang } from './i18n.js?v=22';
 
 let peer = null;
 let conn = null;
@@ -15,6 +15,22 @@ let recvCurrent = null;
 let recvChain = Promise.resolve();
 
 export function initSender(roomId) {
+  // inputs (gallery accepts any file type now)
+  lib.$('#camera-input').addEventListener('change', onPick);
+  lib.$('#gallery-input').addEventListener('change', onPick);
+
+  document.addEventListener('langchange', () => {
+    setStatus(lastState);
+    updateSentCount();
+  });
+
+  // QR scanners often open the same link in several tabs — elect one leader,
+  // the others show a notice and take over only if the leader closes.
+  setStatus('connecting');
+  electLeader(roomId, () => connect(roomId));
+}
+
+function connect(roomId) {
   setStatus('connecting');
 
   peer = lib.newPeer(); // random id
@@ -27,15 +43,59 @@ export function initSender(roomId) {
     console.warn('[AirPic peer error]', err && err.type, err && err.message);
     setStatus('error');
   });
+}
 
-  // inputs (gallery accepts any file type now)
-  lib.$('#camera-input').addEventListener('change', onPick);
-  lib.$('#gallery-input').addEventListener('change', onPick);
+// --- duplicate-tab leader election (BroadcastChannel, same origin) ---
+function electLeader(roomId, onLeader) {
+  let bc;
+  try { bc = new BroadcastChannel('airpic-room-' + roomId); } catch (e) { onLeader(); return; }
 
-  document.addEventListener('langchange', () => {
-    setStatus(lastState);
-    updateSentCount();
-  });
+  const myId = Math.random().toString(36).slice(2, 8);
+  const claims = new Map([[myId, Date.now()]]);
+  let sawBeat = false;
+  let settled = false;
+  let lastBeat = Date.now();
+
+  bc.onmessage = (e) => {
+    const d = e.data;
+    if (!d) return;
+    if (d.t === 'claim') {
+      claims.set(d.id, Date.now());
+      if (settled) { try { bc.postMessage({ t: 'beat' }); } catch {} } // leader asserts itself
+    } else if (d.t === 'beat') {
+      sawBeat = true;
+      lastBeat = Date.now();
+    }
+  };
+
+  const becomeLeader = () => {
+    if (settled) return;
+    settled = true;
+    setInterval(() => { try { bc.postMessage({ t: 'beat' }); } catch {} }, 1000);
+    onLeader();
+  };
+  const becomeDuplicate = () => {
+    if (settled) return;
+    settled = true;
+    setStatus('duplicate');
+    const t = setInterval(() => {
+      if (Date.now() - lastBeat > 3000) { // leader tab closed — take over
+        clearInterval(t);
+        try { bc.close(); } catch {}
+        electLeader(roomId, onLeader);
+      }
+    }, 800);
+  };
+
+  try { bc.postMessage({ t: 'claim', id: myId }); } catch {}
+
+  setTimeout(() => {
+    if (settled) return;
+    const ids = [...claims.keys()].sort();
+    const lowest = ids[0] === myId;
+    if (sawBeat || !lowest) becomeDuplicate();
+    else becomeLeader();
+  }, 350);
 }
 
 let lastState = 'connecting';

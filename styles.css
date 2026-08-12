@@ -235,6 +235,7 @@ body::before {
 .sender-status[data-state="connected"] { color: #4a5c39; background: var(--sage-soft); }
 .sender-status[data-state="sending"] { color: #7a5a32; background: var(--tan-soft); }
 .sender-status[data-state="error"], .sender-status[data-state="pcOffline"], .sender-status[data-state="disconnected"] { color: var(--earth); background: #efe0d2; }
+.sender-status[data-state="duplicate"] { color: var(--ink-2); background: var(--linen-2); }
 
 .sender-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px var(--pad) 0; max-width: 560px; margin: 0 auto; width: 100%; }
 .action {
