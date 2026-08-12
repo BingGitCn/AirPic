@@ -1,0 +1,12 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# local-only session/plan artifacts
+.zcode/
+
+# (no build step, but just in case)
+node_modules/

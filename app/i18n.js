@@ -1,0 +1,113 @@
+// app/i18n.js — bilingual strings + apply/switch
+// Keys are shared by receiver & sender views. Values are copy; keep tone restrained & literary.
+
+export const dict = {
+  zh: {
+    'kicker': 'AIRPIC · 局域网照片直传',
+    'hero.title': '按下快门，它已在这里。',
+    'hero.sub': '手机照片，经局域网直连，落入你选定的文件夹。',
+    'steps.label': '三步',
+    'step.1': '在电脑上，选一个文件夹。',
+    'step.2': '用手机，扫一下屏幕上的码。',
+    'step.3': '拍下，或选好——照片静静落下。',
+    'folder.select': '选择文件夹',
+    'folder.chosen': '已选：{name}',
+    'folder.reconnect': '重新连接文件夹',
+    'folder.empty': '尚未选择文件夹',
+    'status.waiting': '等待连接',
+    'status.connected': '已连接',
+    'status.receiving': '接收中…',
+    'status.done': '已完成',
+    'status.error': '连接异常，正在重试',
+    'received.count': '已收到 {n} 张',
+    'qr.hint': '用手机扫码',
+    'unsupported': '为获得自动保存体验，请在 Chrome 或 Edge 中打开。',
+    'privacy': '你的照片不经过任何服务器。设备直连，端到端加密。',
+    'footer.note': '同一局域网 · WebRTC 直连 · 无需安装',
+
+    'sender.title': '发送到这台电脑',
+    'sender.status.connecting': '正在连接电脑…',
+    'sender.status.connected': '已连接电脑',
+    'sender.status.sending': '发送中…',
+    'sender.status.disconnected': '已断开',
+    'sender.status.error': '连接异常',
+    'sender.status.pcOffline': '电脑不在线，请重扫二维码',
+    'sender.camera': '拍照',
+    'sender.gallery': '从相册选择',
+    'sender.hint': '拍下或选好，照片自动飞向电脑。',
+    'sent.count': '已发送 {n} 张',
+    'sender.sent.badge': '已送达',
+    'sender.queued.badge': '排队中',
+    'error.noFolder': '电脑端尚未选择文件夹'
+  },
+  en: {
+    'kicker': 'AIRPIC · LOCAL PHOTO LINK',
+    'hero.title': 'Press the shutter. It is already here.',
+    'hero.sub': 'Phone photos, over a direct local link, into the folder you choose.',
+    'steps.label': 'Three steps',
+    'step.1': 'On this computer, choose a folder.',
+    'step.2': 'With your phone, scan the code on screen.',
+    'step.3': 'Shoot or pick — they land, quietly.',
+    'folder.select': 'Choose a folder',
+    'folder.chosen': 'Folder: {name}',
+    'folder.reconnect': 'Reconnect folder',
+    'folder.empty': 'No folder chosen yet',
+    'status.waiting': 'Waiting for connection',
+    'status.connected': 'Connected',
+    'status.receiving': 'Receiving…',
+    'status.done': 'Done',
+    'status.error': 'Connection trouble — retrying',
+    'received.count': '{n} received',
+    'qr.hint': 'Scan with your phone',
+    'unsupported': 'For automatic saving, open in Chrome or Edge.',
+    'privacy': 'Your photos never touch a server. Direct, end-to-end, encrypted.',
+    'footer.note': 'Same local network · WebRTC direct · Nothing to install',
+
+    'sender.title': 'Send to this computer',
+    'sender.status.connecting': 'Connecting to the computer…',
+    'sender.status.connected': 'Connected to the computer',
+    'sender.status.sending': 'Sending…',
+    'sender.status.disconnected': 'Disconnected',
+    'sender.status.error': 'Connection trouble',
+    'sender.status.pcOffline': 'Computer offline — please rescan',
+    'sender.camera': 'Take photo',
+    'sender.gallery': 'Pick from gallery',
+    'sender.hint': 'Shoot or pick — photos fly to the computer.',
+    'sent.count': '{n} sent',
+    'sender.sent.badge': 'delivered',
+    'sender.queued.badge': 'queued',
+    'error.noFolder': 'No folder chosen on the computer yet'
+  }
+};
+
+const STORE_KEY = 'airpic.lang';
+
+export function getLang() {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved === 'zh' || saved === 'en') return saved;
+  return String(navigator.language || 'en').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+}
+
+export function setLang(lang) {
+  localStorage.setItem(STORE_KEY, lang);
+  apply(lang);
+}
+
+export function t(key, lang = getLang(), params) {
+  const table = dict[lang] || dict.en;
+  let s = table[key] != null ? table[key] : dict.en[key];
+  if (s == null) s = key;
+  if (params) for (const k in params) s = s.split('{' + k + '}').join(params[k]);
+  return s;
+}
+
+export function apply(lang = getLang()) {
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    node.textContent = t(node.dataset.i18n, lang);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach((node) => {
+    node.setAttribute('placeholder', t(node.dataset.i18nPh, lang));
+  });
+  document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
+}

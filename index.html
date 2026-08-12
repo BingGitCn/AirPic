@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAFAF7" />
+  <meta name="description" content="AirPic — phone photos, over a direct local link, into the folder you choose. No app, no install, peer-to-peer over WebRTC." />
+  <title>AirPic · 手机照片 直达文件夹</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Serif+SC:wght@500;600&display=swap" />
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="role-receiver">
+
+  <!-- top bar -->
+  <header class="bar">
+    <div class="brand">AirPic</div>
+    <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Language">EN</button>
+  </header>
+
+  <!-- ============ RECEIVER (PC) ============ -->
+  <main id="view-receiver" class="view view-receiver">
+    <section class="wrap">
+
+      <div class="kicker" data-i18n="kicker">AIRPIC · LOCAL PHOTO LINK</div>
+
+      <h1 class="hero-title" data-i18n="hero.title">Press the shutter. It is already here.</h1>
+      <p class="hero-sub" data-i18n="hero.sub">Phone photos, over a direct local link, into the folder you choose.</p>
+
+      <ol class="steps" aria-label="steps">
+        <li>
+          <span class="step-no">01</span>
+          <span class="step-text" data-i18n="step.1">On this computer, choose a folder.</span>
+        </li>
+        <li>
+          <span class="step-no">02</span>
+          <span class="step-text" data-i18n="step.2">With your phone, scan the code on screen.</span>
+        </li>
+        <li>
+          <span class="step-no">03</span>
+          <span class="step-text" data-i18n="step.3">Shoot or pick — they land, quietly.</span>
+        </li>
+      </ol>
+
+      <section class="panel" id="receiver-panel" aria-label="receiver">
+        <div class="panel-qr">
+          <div class="qr-frame">
+            <canvas id="qr-canvas" width="256" height="256" aria-label="QR code"></canvas>
+          </div>
+          <div class="qr-hint" data-i18n="qr.hint">Scan with your phone</div>
+          <div class="status" id="qr-status" data-state="waiting" data-i18n="status.waiting">Waiting for connection</div>
+        </div>
+        <div class="panel-side">
+          <button id="pick-btn" class="btn primary" type="button" data-i18n="folder.select">Choose a folder</button>
+          <div class="folder-name" id="folder-name" data-i18n="folder.empty">No folder chosen yet</div>
+          <button id="reconnect-btn" class="btn ghost hidden" type="button" data-i18n="folder.reconnect">Reconnect folder</button>
+          <div class="received-count mono" id="received-count"></div>
+        </div>
+      </section>
+
+      <p class="unsupported hidden" id="unsupported" data-i18n="unsupported">For automatic saving, open in Chrome or Edge.</p>
+
+      <div class="belief">
+        <span class="rule" aria-hidden="true"></span>
+        <p data-i18n="privacy">Your photos never touch a server. Direct, end-to-end, encrypted.</p>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ============ SENDER (PHONE) ============ -->
+  <main id="view-sender" class="view view-sender" hidden>
+    <header class="sender-head">
+      <div class="brand-sm">AirPic</div>
+      <div class="sender-title" data-i18n="sender.title">Send to this computer</div>
+      <div class="sender-status mono" id="sender-status" data-state="connecting" data-i18n="sender.status.connecting">Connecting to the computer…</div>
+    </header>
+
+    <div class="sender-actions">
+      <label class="action camera">
+        <input id="camera-input" type="file" accept="image/*" capture="environment" hidden />
+        <span class="action-mark" aria-hidden="true"></span>
+        <span class="action-label" data-i18n="sender.camera">Take photo</span>
+      </label>
+      <label class="action gallery">
+        <input id="gallery-input" type="file" accept="image/*" multiple hidden />
+        <span class="action-mark gallery-mark" aria-hidden="true"></span>
+        <span class="action-label" data-i18n="sender.gallery">Pick from gallery</span>
+      </label>
+    </div>
+
+    <p class="sender-hint" data-i18n="sender.hint">Shoot or pick — photos fly to the computer.</p>
+    <div class="sent-count mono" id="sent-count"></div>
+
+    <div class="thumbs" id="thumbs" aria-live="polite"></div>
+  </main>
+
+  <footer class="foot">
+    <span class="mono" data-i18n="footer.note">Same local network · WebRTC direct · Nothing to install</span>
+  </footer>
+
+  <!-- PeerJS (UMD, self-contained, exposes window.Peer) -->
+  <script src="./vendor/peerjs.min.js"></script>
+  <!-- app (ES module, deferred) -->
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>
