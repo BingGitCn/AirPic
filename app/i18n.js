@@ -4,7 +4,8 @@
 export const dict = {
   zh: {
     'tagline': '局域网照片直传',
-    'hero.title': '快门一按，即达。',
+    'hero.title.a': '快门一按，',
+    'hero.title.b': '即达。',
     'hero.sub': '选个文件夹，手机扫一扫，照片便静静落下。',
     'flow': '选文件夹 · 扫二维码 · 拍下或选好 · 落下',
 
@@ -42,7 +43,8 @@ export const dict = {
   },
   en: {
     'tagline': 'Direct photo transfer · local network',
-    'hero.title': 'One shutter press — it’s there.',
+    'hero.title.a': 'One shutter press — ',
+    'hero.title.b': 'it’s there.',
     'hero.sub': 'Pick a folder, scan with your phone, and the photos land quietly.',
     'flow': 'Choose folder · Scan code · Shoot or pick · Lands',
 

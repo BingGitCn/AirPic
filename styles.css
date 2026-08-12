@@ -66,16 +66,16 @@ body::before {
 .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .bg span { position: absolute; display: block; }
 .bg .b1 {
-  top: -12%; right: -10%; width: 44vw; height: 44vw;
+  top: -6%; right: -6%; width: 24vw; height: 24vw;
   border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%;
   background: linear-gradient(135deg, #e8d5c4, #f1e3d3);
-  opacity: 0.9;
+  opacity: 0.8;
 }
 .bg .b2 {
-  bottom: -14%; left: -12%; width: 40vw; height: 40vw;
+  bottom: -8%; left: -8%; width: 22vw; height: 22vw;
   border-radius: 48% 52% 45% 55% / 55% 45% 52% 48%;
   background: linear-gradient(135deg, #e0e8e2, #eef2eb);
-  opacity: 0.9;
+  opacity: 0.8;
 }
 .bg .b3 { display: none; }
 
@@ -107,6 +107,7 @@ body::before {
   font-family: var(--serif); font-weight: 600; font-size: clamp(2.2rem, 6.6vw, 3.7rem);
   line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 16ch; color: var(--earth);
 }
+.hero-title .accent { color: var(--sage-d); font-style: italic; }
 .hero-sub {
   font-family: var(--serif); font-size: clamp(1.05rem, 2.4vw, 1.24rem); line-height: 1.6;
   color: var(--ink-2); margin: 0 0 34px; max-width: 44ch;
@@ -120,7 +121,7 @@ body::before {
   gap: 34px;
   align-items: center;
   padding: clamp(26px, 4vw, 40px);
-  background: var(--linen);
+  background: #fffefb;
   border-radius: 46px 30px 48px 34px;
   box-shadow: var(--sh-soft);
   margin-bottom: 18px;
@@ -170,7 +171,7 @@ body::before {
 
 /* belief — a smaller Linen card (opposite blob) */
 .belief {
-  margin: 30px 0 8px; padding: 20px 24px; background: var(--linen-2);
+  margin: 30px 0 8px; padding: 20px 24px; background: #fffefb;
   border-radius: 28px 40px 26px 42px; box-shadow: var(--sh-press);
   display: grid; gap: 10px;
 }

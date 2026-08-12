@@ -1,8 +1,8 @@
 // app/main.js — bootstrap: language, role routing (receiver vs sender).
-import { apply, getLang, setLang } from './i18n.js?v=13';
-import * as lib from './lib.js?v=13';
-import { initReceiver } from './receiver.js?v=13';
-import { initSender } from './sender.js?v=13';
+import { apply, getLang, setLang } from './i18n.js?v=14';
+import * as lib from './lib.js?v=14';
+import { initReceiver } from './receiver.js?v=14';
+import { initSender } from './sender.js?v=14';
 
 function refreshToggle() {
   const toggle = lib.$('#lang-toggle');

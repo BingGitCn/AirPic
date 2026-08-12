@@ -12,7 +12,7 @@
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" />
 
-  <link rel="stylesheet" href="./styles.css?v=13" />
+  <link rel="stylesheet" href="./styles.css?v=14" />
 </head>
 <body class="role-receiver">
 
@@ -38,7 +38,7 @@
 
       <div class="tagline" data-i18n="tagline">Direct photo transfer · local network</div>
 
-      <h1 class="hero-title" data-i18n="hero.title">Press the shutter. It is already here.</h1>
+      <h1 class="hero-title"><span data-i18n="hero.title.a">快门一按，</span><span class="accent" data-i18n="hero.title.b">即达。</span></h1>
       <p class="hero-sub" data-i18n="hero.sub">Phone photos, over a direct local link, into the folder you choose.</p>
 
       <section class="panel" id="receiver-panel" aria-label="receiver">
@@ -126,6 +126,6 @@
   <!-- QR generator (UMD, exposes window.qrcode) -->
   <script src="./vendor/qrcode-generator.min.js"></script>
   <!-- app (ES module, deferred) -->
-  <script type="module" src="./app/main.js?v=13"></script>
+  <script type="module" src="./app/main.js?v=14"></script>
 </body>
 </html>
