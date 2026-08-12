@@ -1,6 +1,6 @@
 // app/sender.js — phone side: connect to room, pick/capture photos, send in 16KB chunks with backpressure.
-import * as lib from './lib.js?v=10';
-import { t, getLang } from './i18n.js?v=10';
+import * as lib from './lib.js?v=11';
+import { t, getLang } from './i18n.js?v=11';
 
 const CHUNK = 16 * 1024;          // 16 KiB — safe under SCTP message-size limits
 const LOW = 1 << 20;              // 1 MiB bufferedAmountLowThreshold

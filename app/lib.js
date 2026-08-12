@@ -48,9 +48,9 @@ export function renderQr(canvas, data) {
   if (!ctx) return;
   canvas.width = size;
   canvas.height = size;
-  ctx.fillStyle = '#ffffff';     // background + quiet zone
+  ctx.fillStyle = '#faf6f1';     // background + quiet zone — warm cream
   ctx.fillRect(0, 0, size, size);
-  ctx.fillStyle = '#292524';     // dark modules — stone-800 (warm near-black)
+  ctx.fillStyle = '#5c4033';     // dark modules — Deep Earth (warm brown)
   for (let r = 0; r < count; r++) {
     for (let c = 0; c < count; c++) {
       if (qr.isDark(r, c)) ctx.fillRect((c + margin) * cell, (r + margin) * cell, cell, cell);
