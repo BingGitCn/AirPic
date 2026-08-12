@@ -1,7 +1,7 @@
 // app/sender.js — phone side: connect to room, send photos/files to the computer,
 // and receive files the computer sends back (save to downloads).
-import * as lib from './lib.js?v=19';
-import { t, getLang } from './i18n.js?v=19';
+import * as lib from './lib.js?v=20';
+import { t, getLang } from './i18n.js?v=20';
 
 let peer = null;
 let conn = null;
